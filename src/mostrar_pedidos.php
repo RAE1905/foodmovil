@@ -3,12 +3,28 @@ session_start();
 include_once "includes/header.php";
 include "../conexion.php";
 
-// Obtener los pedidos
-$query = mysqli_query($conexion, "SELECT dp.id_pedido, dp.nombre AS nombre_platillo, dp.precio, dp.cantidad, p.fecha 
-                                   FROM detalle_pedidos dp 
-                                   INNER JOIN pedidos p ON dp.id_pedido = p.id 
-                                   ORDER BY dp.id_pedido, dp.nombre");
+// Obtener los pedidos con sus detalles y el nombre del cliente
+$sql = "SELECT dp.id_pedido, dp.nombre AS nombre_platillo, dp.cantidad, p.nombre_cliente 
+        FROM detalle_pedidos dp 
+        INNER JOIN pedidos p ON dp.id_pedido = p.id 
+        ORDER BY dp.id_pedido";
+$query = mysqli_query($conexion, $sql);
 
+// Verificar si la consulta se ejecutó correctamente
+if (!$query) {
+    die("Error en la consulta: " . mysqli_error($conexion));
+}
+
+// Agrupar los pedidos por ID del pedido
+$pedidos = [];
+while ($row = mysqli_fetch_assoc($query)) {
+    $id_pedido = $row['id_pedido'];
+    $pedidos[$id_pedido]['cliente'] = $row['nombre_cliente'];
+    $pedidos[$id_pedido]['detalles'][] = [
+        'platillo' => $row['nombre_platillo'],
+        'cantidad' => $row['cantidad']
+    ];
+}
 ?>
 
 <div class="card">
@@ -16,38 +32,32 @@ $query = mysqli_query($conexion, "SELECT dp.id_pedido, dp.nombre AS nombre_plati
         Pedidos
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>Nombre del Platillo</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Fecha del Pedido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php 
-                    if (mysqli_num_rows($query) > 0) {
-                        while ($row = mysqli_fetch_assoc($query)) {
-                            echo "<tr>
-                                    <td>{$row['id_pedido']}</td>
-                                    <td>{$row['nombre_platillo']}</td>
-                                    <td>{$row['precio']}</td>
-                                    <td>{$row['cantidad']}</td>
-                                    <td>{$row['fecha']}</td>
-                                  </tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5' class='text-center'>No hay pedidos disponibles</td></tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+        <?php if (!empty($pedidos)) { ?>
+            <div class="table-responsive">
+                <?php foreach ($pedidos as $id_pedido => $pedido) { ?>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <!--Pedido ID: <?php echo htmlspecialchars($id_pedido); ?>--> Cliente: <?php echo htmlspecialchars($pedido['cliente']); ?>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pedido['detalles'] as $detalle) { ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($detalle['cantidad']); ?></td>
+                                    <td><?php echo htmlspecialchars($detalle['platillo']); ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                <?php } ?>
+            </div>
+        <?php } else { ?>
+            <p class="text-center">No hay pedidos disponibles</p>
+        <?php } ?>
     </div>
 </div>
 
 <?php include_once "includes/footer.php"; ?>
-

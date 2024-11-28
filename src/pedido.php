@@ -51,6 +51,10 @@ if ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 3) {
                             <div class="row" id="detalle_pedido"></div>
                             <hr>
                             <div class="form-group">
+                                <label for="nombre_cliente">Nombre del Cliente</label>
+                                <input type="text" id="nombre_cliente" class="form-control" placeholder="Ingrese el nombre del cliente">
+                            </div>
+                            <div class="form-group">
                                 <label for="observacion">Observaciones</label>
                                 <textarea id="observacion" class="form-control" rows="3" placeholder="Observaciones"></textarea>
                             </div>
@@ -68,6 +72,33 @@ if ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 3) {
         </div>
         <!-- /.card -->
     </div>
+
+    <script>
+        document.getElementById('realizar_pedido').addEventListener('click', function () {
+            const nombreCliente = document.getElementById('nombre_cliente').value.trim();
+            const observacion = document.getElementById('observacion').value.trim();
+
+            if (!nombreCliente) {
+                alert('Por favor, ingrese el nombre del cliente.');
+                return;
+            }
+
+            // Aquí puedes realizar una llamada AJAX para enviar los datos al servidor
+            const detallePedido = []; // Simula obtener los detalles del pedido dinámicamente
+            const data = {
+                id_sala: document.getElementById('id_sala').value,
+                mesa: document.getElementById('mesa').value,
+                nombre_cliente: nombreCliente,
+                observacion: observacion,
+                detalles: detallePedido
+            };
+
+            console.log('Datos a enviar:', data);
+
+            // Implementa tu lógica AJAX aquí para enviar los datos a tu backend
+        });
+    </script>
+
 <?php include_once "includes/footer.php";
 } else {
     header('Location: permisos.php');

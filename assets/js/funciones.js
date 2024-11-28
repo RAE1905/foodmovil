@@ -38,7 +38,14 @@ document.addEventListener("DOMContentLoaded", function () {
         var action = 'procesarPedido';
         var id_sala = $('#id_sala').val();
         var mesa = $('#mesa').val();
+        var nombre_cliente = $('#nombre_cliente').val();  // Obtener el nombre del cliente
         var observacion = $('#observacion').val();
+        
+        if (!nombre_cliente) {
+            alert('Por favor, ingrese el nombre del cliente.');
+            return;
+        }
+    
         $.ajax({
             url: 'ajax.php',
             async: true,
@@ -46,36 +53,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 procesarPedido: action,
                 id_sala: id_sala,
                 mesa: mesa,
+                nombre_cliente: nombre_cliente,  // Enviar el nombre del cliente
                 observacion: observacion
             },
             success: function (response) {
-                const res = JSON.parse(response);
-                if (response != 'error') {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Pedido Solicitado',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                    setTimeout(() => {
-                        window.location = 'mesas.php?id_sala=' + id_sala + '&mesas=' + res.mensaje;
-                    }, 1500);
-                } else {
+                try {
+                    const res = JSON.parse(response);
+                    if (res.error) {  // Verificar si hay un error
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'Error al generar el pedido: ' + res.error,
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    } else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Pedido Solicitado',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                        setTimeout(() => {
+                            window.location = 'mesas.php?id_sala=' + id_sala + '&mesas=' + res.mensaje;
+                        }, 1500);
+                    }
+                } catch (e) {
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
-                        title: 'Error al generar',
+                        title: 'Error de formato de respuesta del servidor',
                         showConfirmButton: false,
                         timer: 2000
-                    })
+                    });
                 }
             },
             error: function (error) {
-                alert(error);
+                alert('Error en la solicitud: ' + error.statusText);
             }
         });
     });
+    
+    
 
     $('.finalizarPedido').click(function () {
         var action = 'finalizarPedido';

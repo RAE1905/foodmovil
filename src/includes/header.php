@@ -78,14 +78,7 @@ if (empty($_SESSION['active'])) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="mostrar_pedidos.php" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Mostrar pedidos
-                                </p>
-                            </a>
-                        </li>
+    
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-pizza-slice"></i>
@@ -99,7 +92,7 @@ if (empty($_SESSION['active'])) {
                                     echo '<li class="nav-item">
                                         <a href="index.php" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Nueva venta</p>
+                                            <p>Venta por mesas</p>
                                         </a>
                                     </li>';
                                 } if ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 2) {
@@ -107,6 +100,15 @@ if (empty($_SESSION['active'])) {
                                         <a href="lista_ventas.php" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Historial ventas</p>
+                                        </a>
+                                    </li>';
+                                } if ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 2) {
+                                    echo '<li class="nav-item">    
+                                    <a href="mostrar_pedidos.php" class="nav-link">
+                                        <i class="nav-icon fas fa-pizza-slice"></i>
+                                            <p>
+                                                Mostrar pedidos
+                                            </p>
                                         </a>
                                     </li>';
                                 } ?>

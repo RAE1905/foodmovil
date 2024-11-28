@@ -70,6 +70,8 @@ if (isset($_GET['detalle'])) {
 
     echo json_encode($msg);
     die();
+
+    
 } else if (isset($_GET['editarUsuario'])) {
     $idusuario = $_GET['id'];
     $sql = mysqli_query($conexion, "SELECT * FROM usuario WHERE idusuario = $idusuario");
